@@ -110,7 +110,9 @@ function createImageElement(photo) {
                 };
                 img.onerror = () => {
                     console.error(`图片加载失败: ${img.dataset.src}`);
-                    img.src = 'placeholder.jpg'; // 添加一个占位图
+                    img.src = 'placeholder.jpg';
+                    img.classList.remove('loading');
+                    img.classList.add('loaded');
                 };
                 observer.unobserve(img);
             }

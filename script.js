@@ -168,7 +168,40 @@ function initSlideshow() {
         slide.style.left = `${index * 100}%`;
         
         if (index === 0) {
-            slide.appendChild(createThumbnailGrid(photos));
+            // 第一页显示缩略图网格
+            const grid = document.createElement('div');
+            grid.className = 'thumbnail-grid';
+            
+            // 总数显示
+            const totalCount = document.createElement('div');
+            totalCount.className = 'total-count';
+            totalCount.textContent = `共 ${photos.length - 1} 张照片`;
+            grid.appendChild(totalCount);
+            
+            // 添加缩略图
+            photos.slice(1).forEach((p, i) => {
+                const thumbnail = document.createElement('div');
+                thumbnail.className = 'grid-thumbnail';
+                
+                // 编号
+                const number = document.createElement('div');
+                number.className = 'thumbnail-number';
+                number.textContent = i + 1;
+                thumbnail.appendChild(number);
+                
+                // 图片
+                const img = createImageElement(p);
+                thumbnail.appendChild(img);
+                
+                // 点击事件 - 跳转到对应照片
+                thumbnail.onclick = () => {
+                    updateSlide(i + 1);
+                };
+                
+                grid.appendChild(thumbnail);
+            });
+            
+            slide.appendChild(grid);
         } else {
             const container = document.createElement('div');
             container.className = 'photo-container';
@@ -203,6 +236,13 @@ function initSlideshow() {
                 }
             };
             controls.appendChild(jumpButton);
+            
+            // 返回按钮
+            const backToGridBtn = document.createElement('button');
+            backToGridBtn.className = 'back-to-grid-btn';
+            backToGridBtn.textContent = '返回相册';
+            backToGridBtn.onclick = () => updateSlide(0);
+            controls.appendChild(backToGridBtn);
             
             container.appendChild(controls);
             container.appendChild(createImageElement(photo));
@@ -436,41 +476,6 @@ function initMusicPlayer() {
             });
         }
     });
-}
-
-// 修改缩略图创建部分
-function createThumbnailGrid(photos) {
-    const grid = document.createElement('div');
-    grid.className = 'thumbnail-grid';
-    
-    // 总数显示
-    const totalCount = document.createElement('div');
-    totalCount.className = 'total-count';
-    totalCount.textContent = `共 ${photos.length - 1} 张照片`;
-    grid.appendChild(totalCount);
-    
-    // 添加缩略图
-    photos.slice(1).forEach((photo, index) => {
-        const thumbnail = document.createElement('div');
-        thumbnail.className = 'grid-thumbnail';
-        
-        // 编号
-        const number = document.createElement('div');
-        number.className = 'thumbnail-number';
-        number.textContent = index + 1;
-        thumbnail.appendChild(number);
-        
-        // 图片（使用懒加载）
-        const img = createImageElement(photo);
-        thumbnail.appendChild(img);
-        
-        // 点击事件
-        thumbnail.onclick = () => updateSlide(index + 1);
-        
-        grid.appendChild(thumbnail);
-    });
-    
-    return grid;
 }
 
 // 启动应用

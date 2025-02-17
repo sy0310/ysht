@@ -14,6 +14,17 @@ let failedAttempts = 0;
 const MAX_ATTEMPTS = 3;
 const LOCK_TIMEOUT = 5 * 60 * 1000; // 5分钟锁定（毫秒）
 
+// 在文件开头添加WebP支持检测
+async function checkWebPSupport() {
+    const webP = new Image();
+    webP.src = 'data:image/webp;base64,UklGRhoAAABXRUJQVlA4TA0AAAAvAAAAEAcQERGIiP4HAA==';
+    
+    return new Promise((resolve) => {
+        webP.onload = () => resolve(true);
+        webP.onerror = () => resolve(false);
+    });
+}
+
 // 修改异步加载图片函数
 async function loadImage(url) {
     return new Promise((resolve) => {
@@ -30,13 +41,13 @@ async function initializePhotos() {
         photosByChapter[chapter] = [];
         let index = 1;
         let consecutiveFails = 0;
-        const maxConsecutiveFails = 3; // 允许连续失败次数
-        const maxIndex = 200; // 最大检查数量
+        const maxConsecutiveFails = 3;
+        const maxIndex = 200;
 
         while (index <= maxIndex && consecutiveFails < maxConsecutiveFails) {
+            // 修改为.webp格式
             const url = `photos/${chapter}/${index}.webp`;
             try {
-                // 使用更可靠的图片检查方式
                 const exists = await new Promise((resolve) => {
                     const img = new Image();
                     img.onload = () => resolve(true);
@@ -51,7 +62,7 @@ async function initializePhotos() {
                         date: new Date().toISOString()
                     });
                     console.log(`✅ Found: ${url}`);
-                    consecutiveFails = 0; // 重置连续失败计数
+                    consecutiveFails = 0;
                     index++;
                 } else {
                     console.warn(`❌ Missing: ${url}`);
@@ -302,6 +313,12 @@ async function initializePage() {
     }
 
     try {
+        // 检查WebP支持
+        const supportsWebP = await checkWebPSupport();
+        if (!supportsWebP) {
+            console.warn('⚠️ 浏览器不支持WebP格式，可能影响图片显示');
+        }
+
         // 显示加载状态
         document.querySelector('.slides-wrapper').innerHTML = '<div class="loading">加载中...</div>';
         

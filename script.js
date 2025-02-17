@@ -147,18 +147,56 @@ function initSlideshow() {
         return;
     }
 
-    // 更新显示函数（提到外面以便其他地方调用）
-    function updateSlide(newIndex) {
+    let currentSlideIndex = 0;  // 局部变量跟踪当前幻灯片
+
+    // 更新显示函数
+    const updateSlide = (newIndex) => {  // 使用箭头函数保持作用域
         if (newIndex < 0 || newIndex >= photos.length) return;
-        currentSlide = newIndex;
-        slidesWrapper.style.transform = `translateX(-${currentSlide * 100}%)`;
-        displayComments(photos[currentSlide].id);
+        currentSlideIndex = newIndex;
+        currentSlide = newIndex;  // 更新全局变量
+        slidesWrapper.style.transform = `translateX(-${currentSlideIndex * 100}%)`;
+        displayComments(photos[currentSlideIndex].id);
         
         // 更新按钮显示
-        prevButton.style.display = currentSlide > 0 ? 'block' : 'none';
-        nextButton.style.display = currentSlide < photos.length - 1 ? 'block' : 'none';
-        backButton.style.display = currentSlide > 0 ? 'block' : 'none';
-    }
+        prevButton.style.display = currentSlideIndex > 0 ? 'block' : 'none';
+        nextButton.style.display = currentSlideIndex < photos.length - 1 ? 'block' : 'none';
+        backButton.style.display = currentSlideIndex > 0 ? 'block' : 'none';
+    };
+
+    // 创建缩略图网格
+    const createThumbnailGrid = () => {
+        const grid = document.createElement('div');
+        grid.className = 'thumbnail-grid';
+        
+        // 总数显示
+        const totalCount = document.createElement('div');
+        totalCount.className = 'total-count';
+        totalCount.textContent = `共 ${photos.length - 1} 张照片`;
+        grid.appendChild(totalCount);
+        
+        // 添加缩略图
+        photos.slice(1).forEach((p, i) => {
+            const thumbnail = document.createElement('div');
+            thumbnail.className = 'grid-thumbnail';
+            
+            // 编号
+            const number = document.createElement('div');
+            number.className = 'thumbnail-number';
+            number.textContent = i + 1;
+            thumbnail.appendChild(number);
+            
+            // 图片
+            const img = createImageElement(p);
+            thumbnail.appendChild(img);
+            
+            // 点击事件 - 跳转到对应照片
+            thumbnail.onclick = () => updateSlide(i + 1);
+            
+            grid.appendChild(thumbnail);
+        });
+        
+        return grid;
+    };
 
     // 添加照片和缩略图网格
     photos.forEach((photo, index) => {
@@ -168,40 +206,7 @@ function initSlideshow() {
         slide.style.left = `${index * 100}%`;
         
         if (index === 0) {
-            // 第一页显示缩略图网格
-            const grid = document.createElement('div');
-            grid.className = 'thumbnail-grid';
-            
-            // 总数显示
-            const totalCount = document.createElement('div');
-            totalCount.className = 'total-count';
-            totalCount.textContent = `共 ${photos.length - 1} 张照片`;
-            grid.appendChild(totalCount);
-            
-            // 添加缩略图
-            photos.slice(1).forEach((p, i) => {
-                const thumbnail = document.createElement('div');
-                thumbnail.className = 'grid-thumbnail';
-                
-                // 编号
-                const number = document.createElement('div');
-                number.className = 'thumbnail-number';
-                number.textContent = i + 1;
-                thumbnail.appendChild(number);
-                
-                // 图片
-                const img = createImageElement(p);
-                thumbnail.appendChild(img);
-                
-                // 点击事件 - 跳转到对应照片
-                thumbnail.onclick = () => {
-                    updateSlide(i + 1);
-                };
-                
-                grid.appendChild(thumbnail);
-            });
-            
-            slide.appendChild(grid);
+            slide.appendChild(createThumbnailGrid());
         } else {
             const container = document.createElement('div');
             container.className = 'photo-container';
@@ -253,8 +258,8 @@ function initSlideshow() {
     });
 
     // 按钮事件绑定
-    prevButton.onclick = () => currentSlide > 0 && updateSlide(currentSlide - 1);
-    nextButton.onclick = () => currentSlide < photos.length - 1 && updateSlide(currentSlide + 1);
+    prevButton.onclick = () => currentSlideIndex > 0 && updateSlide(currentSlideIndex - 1);
+    nextButton.onclick = () => currentSlideIndex < photos.length - 1 && updateSlide(currentSlideIndex + 1);
     backButton.onclick = () => updateSlide(0);
 
     // 初始化显示

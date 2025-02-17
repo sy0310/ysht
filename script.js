@@ -34,7 +34,7 @@ async function initializePhotos() {
         const maxIndex = 200; // 最大检查数量
 
         while (index <= maxIndex && consecutiveFails < maxConsecutiveFails) {
-            const url = `photos/${chapter}/${index}.jpg`;
+            const url = `photos/${chapter}/${index}.webp`;
             try {
                 // 使用更可靠的图片检查方式
                 const exists = await new Promise((resolve) => {

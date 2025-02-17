@@ -140,7 +140,7 @@ function initSlideshow() {
     const backButton = document.getElementById('backToGrid');
     
     const photos = photosByChapter[currentChapter];
-    let currentSlideIndex = 0;  // 局部变量跟踪当前幻灯片
+    let currentSlideIndex = 0;
     
     slidesWrapper.innerHTML = '';
     if (!photos || photos.length === 0) {
@@ -148,11 +148,20 @@ function initSlideshow() {
         return;
     }
 
-    // 更新显示函数 - 定义在最前面
+    // 创建所有幻灯片
+    const slides = photos.map((photo, index) => {
+        const slide = document.createElement('div');
+        slide.className = 'slide';
+        slide.style.position = 'absolute';
+        slide.style.left = `${index * 100}%`;
+        return slide;
+    });
+
+    // 更新显示函数
     function updateSlide(newIndex) {
         if (newIndex < 0 || newIndex >= photos.length) return;
         currentSlideIndex = newIndex;
-        currentSlide = newIndex;  // 更新全局变量
+        currentSlide = newIndex; // 更新全局变量
         slidesWrapper.style.transform = `translateX(-${currentSlideIndex * 100}%)`;
         displayComments(photos[currentSlideIndex].id);
         
@@ -163,103 +172,104 @@ function initSlideshow() {
     }
 
     // 创建缩略图网格
-    function createThumbnailGrid() {
-        const grid = document.createElement('div');
-        grid.className = 'thumbnail-grid';
+    const gridSlide = slides[0];
+    const grid = document.createElement('div');
+    grid.className = 'thumbnail-grid';
+    
+    // 总数显示
+    const totalCount = document.createElement('div');
+    totalCount.className = 'total-count';
+    totalCount.textContent = `共 ${photos.length - 1} 张照片`;
+    grid.appendChild(totalCount);
+    
+    // 添加缩略图
+    photos.slice(1).forEach((photo, i) => {
+        const thumbnail = document.createElement('div');
+        thumbnail.className = 'grid-thumbnail';
         
-        // 总数显示
-        const totalCount = document.createElement('div');
-        totalCount.className = 'total-count';
-        totalCount.textContent = `共 ${photos.length - 1} 张照片`;
-        grid.appendChild(totalCount);
+        // 编号
+        const number = document.createElement('div');
+        number.className = 'thumbnail-number';
+        number.textContent = i + 1;
+        thumbnail.appendChild(number);
         
-        // 添加缩略图
-        photos.slice(1).forEach((p, i) => {
-            const thumbnail = document.createElement('div');
-            thumbnail.className = 'grid-thumbnail';
-            
-            // 编号
-            const number = document.createElement('div');
-            number.className = 'thumbnail-number';
-            number.textContent = i + 1;
-            thumbnail.appendChild(number);
-            
-            // 图片
-            const img = createImageElement(p);
-            thumbnail.appendChild(img);
-            
-            // 点击事件 - 跳转到对应照片
-            thumbnail.onclick = () => updateSlide(i + 1);
-            
-            grid.appendChild(thumbnail);
-        });
+        // 图片
+        const img = createImageElement(photo);
+        thumbnail.appendChild(img);
         
-        return grid;
-    }
+        // 点击事件
+        thumbnail.onclick = function() {
+            updateSlide(i + 1);
+        };
+        
+        grid.appendChild(thumbnail);
+    });
+    
+    gridSlide.appendChild(grid);
 
-    // 添加照片和缩略图网格
-    photos.forEach((photo, index) => {
-        const slide = document.createElement('div');
-        slide.className = 'slide';
-        slide.style.position = 'absolute';
-        slide.style.left = `${index * 100}%`;
+    // 创建照片视图
+    photos.slice(1).forEach((photo, i) => {
+        const container = document.createElement('div');
+        container.className = 'photo-container';
         
-        if (index === 0) {
-            slide.appendChild(createThumbnailGrid());
-        } else {
-            const container = document.createElement('div');
-            container.className = 'photo-container';
-            
-            // 添加照片编号和跳转控制
-            const controls = document.createElement('div');
-            controls.className = 'photo-controls';
-            
-            // 添加照片编号显示
-            const photoNumber = document.createElement('span');
-            photoNumber.className = 'photo-number';
-            photoNumber.textContent = `${index}/${photos.length - 1}`;
-            controls.appendChild(photoNumber);
-            
-            // 添加跳转输入框
-            const jumpInput = document.createElement('input');
-            jumpInput.type = 'number';
-            jumpInput.min = 1;
-            jumpInput.max = photos.length - 1;
-            jumpInput.placeholder = '跳转到...';
-            jumpInput.className = 'jump-input';
-            controls.appendChild(jumpInput);
-            
-            // 跳转按钮
-            const jumpButton = document.createElement('button');
-            jumpButton.className = 'jump-button';
-            jumpButton.textContent = '跳转';
-            jumpButton.onclick = () => {
-                const num = parseInt(jumpInput.value);
-                if (num >= 1 && num <= photos.length - 1) {
-                    updateSlide(num);
-                }
-            };
-            controls.appendChild(jumpButton);
-            
-            // 返回按钮
-            const backToGridBtn = document.createElement('button');
-            backToGridBtn.className = 'back-to-grid-btn';
-            backToGridBtn.textContent = '返回相册';
-            backToGridBtn.onclick = () => updateSlide(0);
-            controls.appendChild(backToGridBtn);
-            
-            container.appendChild(controls);
-            container.appendChild(createImageElement(photo));
-            slide.appendChild(container);
-        }
+        // 添加照片编号和跳转控制
+        const controls = document.createElement('div');
+        controls.className = 'photo-controls';
         
-        slidesWrapper.appendChild(slide);
+        // 添加照片编号显示
+        const photoNumber = document.createElement('span');
+        photoNumber.className = 'photo-number';
+        photoNumber.textContent = `${i + 1}/${photos.length - 1}`;
+        controls.appendChild(photoNumber);
+        
+        // 添加跳转输入框
+        const jumpInput = document.createElement('input');
+        jumpInput.type = 'number';
+        jumpInput.min = 1;
+        jumpInput.max = photos.length - 1;
+        jumpInput.placeholder = '跳转到...';
+        jumpInput.className = 'jump-input';
+        controls.appendChild(jumpInput);
+        
+        // 跳转按钮
+        const jumpButton = document.createElement('button');
+        jumpButton.className = 'jump-button';
+        jumpButton.textContent = '跳转';
+        jumpButton.onclick = function() {
+            const num = parseInt(jumpInput.value);
+            if (num >= 1 && num <= photos.length - 1) {
+                updateSlide(num);
+            }
+        };
+        controls.appendChild(jumpButton);
+        
+        // 返回按钮
+        const backToGridBtn = document.createElement('button');
+        backToGridBtn.className = 'back-to-grid-btn';
+        backToGridBtn.textContent = '返回相册';
+        backToGridBtn.onclick = function() {
+            updateSlide(0);
+        };
+        controls.appendChild(backToGridBtn);
+        
+        container.appendChild(controls);
+        container.appendChild(createImageElement(photo));
+        slides[i + 1].appendChild(container);
     });
 
+    // 添加所有幻灯片到容器
+    slides.forEach(slide => slidesWrapper.appendChild(slide));
+
     // 按钮事件绑定
-    prevButton.onclick = () => currentSlideIndex > 0 && updateSlide(currentSlideIndex - 1);
-    nextButton.onclick = () => currentSlideIndex < photos.length - 1 && updateSlide(currentSlideIndex + 1);
-    backButton.onclick = () => updateSlide(0);
+    prevButton.onclick = function() {
+        if (currentSlideIndex > 0) updateSlide(currentSlideIndex - 1);
+    };
+    nextButton.onclick = function() {
+        if (currentSlideIndex < photos.length - 1) updateSlide(currentSlideIndex + 1);
+    };
+    backButton.onclick = function() {
+        updateSlide(0);
+    };
 
     // 初始化显示
     updateSlide(0);

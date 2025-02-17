@@ -1,3 +1,12 @@
+// 在文件开头添加 GitHub Pages 路径检测
+const isGitHubPages = window.location.hostname === 'sy0310.github.io';
+const repoName = 'ysht'; // 你的仓库名
+
+// 动态资源加载适配
+function resolvePath(relativePath) {
+    return isGitHubPages ? `/${repoName}${relativePath}` : relativePath;
+}
+
 // 照片数组 - 按章节分类
 const photosByChapter = {
     heart: [],    // 三年心动

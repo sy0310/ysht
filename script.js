@@ -140,6 +140,7 @@ function initSlideshow() {
     const backButton = document.getElementById('backToGrid');
     
     const photos = photosByChapter[currentChapter];
+    let currentSlideIndex = 0;  // 局部变量跟踪当前幻灯片
     
     slidesWrapper.innerHTML = '';
     if (!photos || photos.length === 0) {
@@ -147,10 +148,8 @@ function initSlideshow() {
         return;
     }
 
-    let currentSlideIndex = 0;  // 局部变量跟踪当前幻灯片
-
-    // 更新显示函数
-    const updateSlide = (newIndex) => {  // 使用箭头函数保持作用域
+    // 更新显示函数 - 定义在最前面
+    function updateSlide(newIndex) {
         if (newIndex < 0 || newIndex >= photos.length) return;
         currentSlideIndex = newIndex;
         currentSlide = newIndex;  // 更新全局变量
@@ -161,10 +160,10 @@ function initSlideshow() {
         prevButton.style.display = currentSlideIndex > 0 ? 'block' : 'none';
         nextButton.style.display = currentSlideIndex < photos.length - 1 ? 'block' : 'none';
         backButton.style.display = currentSlideIndex > 0 ? 'block' : 'none';
-    };
+    }
 
     // 创建缩略图网格
-    const createThumbnailGrid = () => {
+    function createThumbnailGrid() {
         const grid = document.createElement('div');
         grid.className = 'thumbnail-grid';
         
@@ -196,7 +195,7 @@ function initSlideshow() {
         });
         
         return grid;
-    };
+    }
 
     // 添加照片和缩略图网格
     photos.forEach((photo, index) => {

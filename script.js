@@ -37,7 +37,9 @@ async function loadImage(url) {
 
 // 修改初始化照片数组函数
 async function initializePhotos() {
+    console.log('开始初始化照片数组...');
     for (let chapter in photosByChapter) {
+        console.log(`正在加载 ${chapter} 章节的照片...`);
         photosByChapter[chapter] = [];
         let index = 1;
         let consecutiveFails = 0;
@@ -45,37 +47,45 @@ async function initializePhotos() {
         const maxIndex = 200;
 
         while (index <= maxIndex && consecutiveFails < maxConsecutiveFails) {
-            // 修改为.webp格式
+            // 确保使用.webp格式
             const url = `photos/${chapter}/${index}.webp`;
+            console.log(`尝试加载: ${url}`);
             try {
                 const exists = await new Promise((resolve) => {
                     const img = new Image();
-                    img.onload = () => resolve(true);
-                    img.onerror = () => resolve(false);
+                    img.onload = () => {
+                        console.log(`✅ 成功加载: ${url}`);
+                        resolve(true);
+                    };
+                    img.onerror = () => {
+                        console.log(`❌ 加载失败: ${url}`);
+                        resolve(false);
+                    };
                     img.src = url;
                 });
 
                 if (exists) {
                     photosByChapter[chapter].push({
                         id: `${chapter}${index}`,
-                        url: url,
+                        url: url,  // 使用.webp格式的URL
                         date: new Date().toISOString()
                     });
-                    console.log(`✅ Found: ${url}`);
                     consecutiveFails = 0;
                     index++;
                 } else {
-                    console.warn(`❌ Missing: ${url}`);
+                    console.warn(`未找到图片: ${url}`);
                     consecutiveFails++;
                 }
             } catch (error) {
-                console.error(`🚨 Error checking ${url}:`, error);
+                console.error(`加载出错 ${url}:`, error);
                 consecutiveFails++;
             }
         }
 
-        console.log(`📊 ${chapter}章节加载完成，共 ${photosByChapter[chapter].length} 张照片`);
+        console.log(`${chapter} 章节加载完成，共找到 ${photosByChapter[chapter].length} 张照片`);
     }
+    
+    console.log('照片加载结果:', photosByChapter);
     return true;
 }
 
@@ -83,25 +93,31 @@ async function initializePhotos() {
 function createImageElement(photo) {
     const img = document.createElement('img');
     img.className = 'loading';
-    img.dataset.src = photo.url; // 使用data-src存储真实URL
-    img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'; // 占位图
+    img.dataset.src = photo.url;
+    img.alt = '照片加载中...';
+    img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
     
-    // 使用Intersection Observer实现懒加载
     const observer = new IntersectionObserver((entries, observer) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 const img = entry.target;
+                console.log(`开始加载图片: ${img.dataset.src}`);
                 img.src = img.dataset.src;
                 img.onload = () => {
+                    console.log(`图片加载成功: ${img.dataset.src}`);
                     img.classList.remove('loading');
                     img.classList.add('loaded');
                 };
-                observer.unobserve(img); // 加载后取消观察
+                img.onerror = () => {
+                    console.error(`图片加载失败: ${img.dataset.src}`);
+                    img.src = 'placeholder.jpg'; // 添加一个占位图
+                };
+                observer.unobserve(img);
             }
         });
     }, {
         root: null,
-        rootMargin: '50px', // 提前50px开始加载
+        rootMargin: '50px',
         threshold: 0.1
     });
     

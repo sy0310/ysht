@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我们的故事</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="auth-overlay" class="auth-overlay">
+        <div class="auth-container">
+            <h2>欢迎回来</h2>
+            <p>请输入我们重新开始的日期</p>
+            <input type="text" id="authDate" placeholder="YYYYMMDD" maxlength="8">
+            <button id="authSubmit">进入</button>
+            <p id="authError" class="auth-error"></p>
+        </div>
+    </div>
+    <div class="floating-hearts">
+        <!-- 爱心会通过 JavaScript 动态添加 -->
+    </div>
+    <div class="container">
+        <header>
+            <h1>我们的故事</h1>
+            <div class="story-intro">
+                <p>十二年的时光，从懵懂到成熟，从相遇到重逢</p>
+                <p>这一路，有你真好</p>
+            </div>
+            <div class="music-player">
+                <div class="music-list">
+                    <audio id="bgMusic" loop preload="auto">
+                        <source src="music/1.mp3" type="audio/mp3">
+                    </audio>
+                    <select id="musicSelect">
+                        <option value="1.mp3">唯一</option>
+                        <option value="2.mp3">那个男孩</option>
+                        <option value="3.mp3">我想念</option>
+                        <option value="4.mp3">流沙</option>
+                        <option value="5.mp3">达尔文</option>
+                    </select>
+                </div>
+                <button id="musicToggle" class="music-btn">
+                    <span class="music-icon">🎵</span>
+                </button>
+            </div>
+        </header>
+
+        <div class="story-chapters">
+            <div class="chapter active" data-chapter="heart">
+                三年心动 (2013-2016)
+            </div>
+            <div class="chapter" data-chapter="wait">
+                九年沉淀 (2016-2024)
+            </div>
+            <div class="chapter" data-chapter="future">
+                未来（2025-至今）
+            </div>
+        </div>
+
+        <div class="slideshow-container">
+            <div class="slides">
+                <div class="slides-wrapper">
+                    <!-- 照片会通过 JavaScript 动态添加 -->
+                </div>
+                <button class="slide-button prev" id="prevSlide">❮</button>
+                <button class="slide-button next" id="nextSlide">❯</button>
+            </div>
+            <div class="comments-section">
+                <div class="comment-form">
+                    <textarea id="commentContent" placeholder="写下这张照片的故事..."></textarea>
+                    <button id="submitComment">发布</button>
+                </div>
+                <div class="comments-container">
+                    <!-- 评论会通过 JavaScript 动态添加 -->
+                </div>
+            </div>
+            <div class="back-to-grid">
+                <button id="backToGrid" class="back-to-grid-btn">
+                    <span>返回相册</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html> 

@@ -1,12 +1,3 @@
-// 在文件开头添加 GitHub Pages 路径检测
-const isGitHubPages = window.location.hostname === 'sy0310.github.io';
-const repoName = 'ysht'; // 你的仓库名
-
-// 动态资源加载适配
-function resolvePath(relativePath) {
-    return isGitHubPages ? `/${repoName}${relativePath}` : relativePath;
-}
-
 // 照片数组 - 按章节分类
 const photosByChapter = {
     heart: [],    // 三年心动
@@ -17,6 +8,11 @@ const photosByChapter = {
 // 在文件开头添加音乐相关变量
 let bgMusic = null;
 let musicPlaying = false;
+
+// 全局认证相关变量
+let failedAttempts = 0;
+const MAX_ATTEMPTS = 3;
+const LOCK_TIMEOUT = 5 * 60 * 1000; // 5分钟锁定（毫秒）
 
 // 修改异步加载图片函数
 async function loadImage(url) {
@@ -111,14 +107,26 @@ function initSlideshow() {
     
     const photos = photosByChapter[currentChapter];
     
-    // 清空并检查照片
     slidesWrapper.innerHTML = '';
     if (!photos || photos.length === 0) {
         slidesWrapper.innerHTML = '<div class="error">还没有照片</div>';
         return;
     }
 
-    // 添加照片
+    // 更新显示函数（提到外面以便其他地方调用）
+    function updateSlide(newIndex) {
+        if (newIndex < 0 || newIndex >= photos.length) return;
+        currentSlide = newIndex;
+        slidesWrapper.style.transform = `translateX(-${currentSlide * 100}%)`;
+        displayComments(photos[currentSlide].id);
+        
+        // 更新按钮显示
+        prevButton.style.display = currentSlide > 0 ? 'block' : 'none';
+        nextButton.style.display = currentSlide < photos.length - 1 ? 'block' : 'none';
+        backButton.style.display = currentSlide > 0 ? 'block' : 'none';
+    }
+
+    // 添加照片和缩略图网格
     photos.forEach((photo, index) => {
         const slide = document.createElement('div');
         slide.className = 'slide';
@@ -127,71 +135,90 @@ function initSlideshow() {
         
         if (index === 0) {
             // 第一页显示缩略图网格
-            slide.appendChild(createThumbnailGrid(photos));
+            const grid = document.createElement('div');
+            grid.className = 'thumbnail-grid';
+            
+            // 总数显示
+            const totalCount = document.createElement('div');
+            totalCount.className = 'total-count';
+            totalCount.textContent = `共 ${photos.length - 1} 张照片`;
+            grid.appendChild(totalCount);
+            
+            // 添加缩略图
+            photos.slice(1).forEach((p, i) => {
+                const thumbnail = document.createElement('div');
+                thumbnail.className = 'grid-thumbnail';
+                
+                // 编号
+                const number = document.createElement('div');
+                number.className = 'thumbnail-number';
+                number.textContent = i + 1;
+                thumbnail.appendChild(number);
+                
+                // 图片
+                const img = createImageElement(p);
+                thumbnail.appendChild(img);
+                
+                // 点击事件
+                thumbnail.onclick = () => {
+                    updateSlide(i + 1);
+                };
+                
+                grid.appendChild(thumbnail);
+            });
+            
+            slide.appendChild(grid);
         } else {
-            slide.appendChild(createImageElement(photo));
+            // 照片视图
+            const container = document.createElement('div');
+            container.className = 'photo-container';
+            
+            // 添加照片编号和跳转控制
+            const controls = document.createElement('div');
+            controls.className = 'photo-controls';
+            
+            // 添加照片编号显示
+            const photoNumber = document.createElement('span');
+            photoNumber.className = 'photo-number';
+            photoNumber.textContent = `${index}/${photos.length - 1}`;
+            controls.appendChild(photoNumber);
+            
+            // 添加跳转输入框
+            const jumpInput = document.createElement('input');
+            jumpInput.type = 'number';
+            jumpInput.min = 1;
+            jumpInput.max = photos.length - 1;
+            jumpInput.placeholder = '跳转到...';
+            jumpInput.className = 'jump-input';
+            controls.appendChild(jumpInput);
+            
+            // 跳转按钮
+            const jumpButton = document.createElement('button');
+            jumpButton.className = 'jump-button';
+            jumpButton.textContent = '跳转';
+            jumpButton.onclick = () => {
+                const num = parseInt(jumpInput.value);
+                if (num >= 1 && num <= photos.length - 1) {
+                    updateSlide(num);
+                }
+            };
+            controls.appendChild(jumpButton);
+            
+            container.appendChild(controls);
+            container.appendChild(createImageElement(photo));
+            slide.appendChild(container);
         }
         
         slidesWrapper.appendChild(slide);
     });
 
-    // 更新显示函数
-    function updateSlide(newIndex) {
-        if (newIndex < 0 || newIndex >= photos.length) return;
-        currentSlide = newIndex;
-        slidesWrapper.style.transform = `translateX(-${currentSlide * 100}%)`;
-        displayComments(photos[currentSlide].id);
-        
-        // 更新按钮状态
-        prevButton.style.display = currentSlide > 0 ? 'block' : 'none';
-        nextButton.style.display = currentSlide < photos.length - 1 ? 'block' : 'none';
-        backButton.style.display = currentSlide > 0 ? 'block' : 'none';
-    }
-
-    // 绑定按钮事件
+    // 按钮事件绑定
     prevButton.onclick = () => currentSlide > 0 && updateSlide(currentSlide - 1);
     nextButton.onclick = () => currentSlide < photos.length - 1 && updateSlide(currentSlide + 1);
     backButton.onclick = () => updateSlide(0);
 
     // 初始化显示
     updateSlide(0);
-}
-
-// 修改创建缩略图网格函数
-function createThumbnailGrid(photos) {
-    const grid = document.createElement('div');
-    grid.className = 'thumbnail-grid';
-    
-    // 添加总数显示
-    const totalCount = document.createElement('div');
-    totalCount.className = 'total-count';
-    totalCount.textContent = `共 ${photos.length - 1} 张照片`;
-    grid.appendChild(totalCount);
-    
-    photos.slice(1).forEach((photo, index) => {
-        const thumbnail = document.createElement('div');
-        thumbnail.className = 'grid-thumbnail';
-        
-        // 添加编号
-        const number = document.createElement('div');
-        number.className = 'thumbnail-number';
-        number.textContent = index + 1;
-        thumbnail.appendChild(number);
-        
-        const img = createImageElement(photo);
-        thumbnail.appendChild(img);
-        
-        thumbnail.onclick = () => {
-            currentSlide = index + 1;
-            const slidesWrapper = document.querySelector('.slides-wrapper');
-            slidesWrapper.style.transform = `translateX(-${currentSlide * 100}%)`;
-            displayComments(photos[currentSlide].id);
-        };
-        
-        grid.appendChild(thumbnail);
-    });
-    
-    return grid;
 }
 
 // 显示评论
@@ -229,42 +256,70 @@ function initAuth() {
     const authInput = document.getElementById('authDate');
     const authSubmit = document.getElementById('authSubmit');
     const authError = document.getElementById('authError');
+    const lockMessage = document.getElementById('lockMessage');
 
-    // 检查是否已认证
-    if (localStorage.getItem('isAuthenticated') === 'true') {
-        authOverlay.classList.add('hidden');
-        isAuthenticated = true;
-        return true;
+    // 检查锁定状态
+    const lockUntil = sessionStorage.getItem('lockUntil');
+    if (lockUntil && Date.now() < parseInt(lockUntil)) {
+        showLockMessage(lockMessage, authInput, authSubmit);
+        return;
     }
 
-    // 添加输入验证
+    // 重置认证状态（每次都需要重新认证）
+    isAuthenticated = false;
+    authOverlay.classList.remove('hidden');
+
+    // 输入验证
     authInput.addEventListener('input', (e) => {
         e.target.value = e.target.value.replace(/[^0-9]/g, '');
     });
 
-    // 添加提交事件
-    authSubmit.addEventListener('click', () => {
+    // 提交事件
+    authSubmit.addEventListener('click', () => handleAuthSubmit());
+
+    // 回车键提交
+    authInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleAuthSubmit();
+    });
+
+    async function handleAuthSubmit() {
+        if (failedAttempts >= MAX_ATTEMPTS) {
+            lockAccount(lockMessage, authInput, authSubmit);
+            return;
+        }
+
         const date = authInput.value;
         if (date === CORRECT_DATE) {
-            localStorage.setItem('isAuthenticated', 'true');
+            // 认证成功
             isAuthenticated = true;
             authOverlay.classList.add('hidden');
             initializePage();
+            failedAttempts = 0; // 重置失败计数
         } else {
-            authError.textContent = '日期不正确，请重试';
+            // 认证失败
+            failedAttempts++;
+            authError.textContent = `密码错误（剩余尝试次数：${MAX_ATTEMPTS - failedAttempts}）`;
             authInput.value = '';
             authInput.focus();
-        }
-    });
 
-    // 添加回车键提交
-    authInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            authSubmit.click();
+            if (failedAttempts >= MAX_ATTEMPTS) {
+                lockAccount(lockMessage, authInput, authSubmit);
+            }
         }
-    });
+    }
 
-    return false;
+    function lockAccount(lockMessage, authInput, authSubmit) {
+        const lockUntil = Date.now() + LOCK_TIMEOUT;
+        sessionStorage.setItem('lockUntil', lockUntil);
+        showLockMessage(lockMessage, authInput, authSubmit);
+    }
+
+    function showLockMessage(lockMessage, authInput, authSubmit) {
+        authInput.style.display = 'none';
+        authSubmit.style.display = 'none';
+        lockMessage.style.display = 'block';
+        authError.textContent = '';
+    }
 }
 
 // 修改初始化页面函数

@@ -5,17 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>我们的故事</title>
     <link rel="stylesheet" href="styles.css">
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // 自动适配GitHub Pages二级路径
-        const basePath = location.pathname.split('/').slice(0,3).join('/');
-        document.querySelectorAll('a, link').forEach(element => {
-            if (element.href && !element.href.startsWith('http')) {
-                element.href = basePath + element.getAttribute('href');
-            }
-        });
-    });
-    </script>
 </head>
 <body>
     <div id="auth-overlay" class="auth-overlay">
@@ -25,6 +14,9 @@
             <input type="text" id="authDate" placeholder="YYYYMMDD" maxlength="8">
             <button id="authSubmit">进入</button>
             <p id="authError" class="auth-error"></p>
+            <div id="lockMessage" class="lock-message" style="display: none;">
+                <p>已锁定，请关闭浏览器后重新打开</p>
+            </div>
         </div>
     </div>
     <div class="floating-hearts">

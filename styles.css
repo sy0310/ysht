@@ -736,6 +736,7 @@ button:disabled {
     background: rgba(255, 255, 255, 1);
 }
 
+/* 缩略图网格样式 */
 .thumbnail-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -752,6 +753,52 @@ button:disabled {
     );
     animation: gradientBG 15s ease infinite;
     background-size: 200% 200%;
+}
+
+/* 缩略图编号样式 */
+.thumbnail-number {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(255, 107, 136, 0.8);
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    z-index: 2;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.grid-thumbnail:hover .thumbnail-number {
+    background: rgba(255, 107, 136, 1);
+    transform: scale(1.1);
+}
+
+/* 网格出现动画 */
+@keyframes gridAppear {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.thumbnail-grid.active {
+    animation: gridAppear 0.6s ease;
+}
+
+/* 添加当前选中照片指示 */
+.slide[style*="left: 0%"] .thumbnail-grid {
+    transform: scale(1);
+    opacity: 1;
 }
 
 /* 自定义滚动条样式 */
@@ -796,34 +843,6 @@ button:disabled {
     width: 100%;
     height: 100%;
     object-fit: cover;
-}
-
-/* 添加缩略图编号样式 */
-.grid-thumbnail {
-    position: relative;
-}
-
-.thumbnail-number {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: rgba(255, 107, 136, 0.8);
-    color: white;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    z-index: 2;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-}
-
-.grid-thumbnail:hover .thumbnail-number {
-    background: rgba(255, 107, 136, 1);
-    transform: scale(1.1);
-    transition: all 0.3s ease;
 }
 
 /* 添加背景动画 */
@@ -915,7 +934,7 @@ button:disabled {
     }
 }
 
-/* 添加返回缩略图按钮样式 */
+/* 原始返回按钮样式 */
 .back-to-grid {
     position: fixed;
     top: 20px;
@@ -1983,4 +2002,63 @@ header::before {
 
 .loaded {
     opacity: 1;
+}
+
+/* 照片控制样式 */
+.photo-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.photo-controls {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.9);
+    padding: 10px 20px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 4px 15px rgba(255, 107, 136, 0.2);
+    z-index: 10;
+}
+
+.photo-number {
+    color: #ff6b88;
+    font-size: 14px;
+    min-width: 60px;
+    text-align: center;
+}
+
+.jump-input {
+    width: 80px;
+    padding: 5px 10px;
+    border: 2px solid rgba(255, 107, 136, 0.2);
+    border-radius: 10px;
+    font-size: 14px;
+    text-align: center;
+    transition: border-color 0.3s ease;
+}
+
+.jump-input:focus {
+    outline: none;
+    border-color: #ff6b88;
+}
+
+.jump-button {
+    background: linear-gradient(45deg, #ff6b88, #ff8da1);
+    color: white;
+    border: none;
+    padding: 5px 15px;
+    border-radius: 15px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.jump-button:hover {
+    transform: translateY(-2px);
 } 

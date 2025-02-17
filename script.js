@@ -157,8 +157,8 @@ function initSlideshow() {
         return slide;
     });
 
-    // 更新显示函数
-    function updateSlide(newIndex) {
+    // 更新显示函数（使用函数表达式）
+    const updateSlide = function(newIndex) {
         if (newIndex < 0 || newIndex >= photos.length) return;
         currentSlideIndex = newIndex;
         currentSlide = newIndex; // 更新全局变量
@@ -169,7 +169,7 @@ function initSlideshow() {
         prevButton.style.display = currentSlideIndex > 0 ? 'block' : 'none';
         nextButton.style.display = currentSlideIndex < photos.length - 1 ? 'block' : 'none';
         backButton.style.display = currentSlideIndex > 0 ? 'block' : 'none';
-    }
+    };
 
     // 创建缩略图网格
     const gridSlide = slides[0];
@@ -197,7 +197,7 @@ function initSlideshow() {
         const img = createImageElement(photo);
         thumbnail.appendChild(img);
         
-        // 点击事件
+        // 点击事件（现在可以访问updateSlide）
         thumbnail.onclick = function() {
             updateSlide(i + 1);
         };

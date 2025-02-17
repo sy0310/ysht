@@ -71,23 +71,30 @@ async function initializePhotos() {
 // 修改创建图片元素函数
 function createImageElement(photo) {
     const img = document.createElement('img');
-    img.src = photo.url;
-    img.alt = '照片';
-    img.loading = 'lazy';
+    img.className = 'loading';
+    img.dataset.src = photo.url; // 使用data-src存储真实URL
+    img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'; // 占位图
     
-    // 添加加载错误处理
-    img.onerror = () => {
-        console.error(`Failed to load image: ${photo.url}`);
-        img.src = 'placeholder.jpg';
-    };
+    // 使用Intersection Observer实现懒加载
+    const observer = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const img = entry.target;
+                img.src = img.dataset.src;
+                img.onload = () => {
+                    img.classList.remove('loading');
+                    img.classList.add('loaded');
+                };
+                observer.unobserve(img); // 加载后取消观察
+            }
+        });
+    }, {
+        root: null,
+        rootMargin: '50px', // 提前50px开始加载
+        threshold: 0.1
+    });
     
-    // 添加加载状态类
-    img.classList.add('loading');
-    img.onload = () => {
-        img.classList.remove('loading');
-        img.classList.add('loaded');
-    };
-    
+    observer.observe(img);
     return img;
 }
 
@@ -134,42 +141,8 @@ function initSlideshow() {
         slide.style.left = `${index * 100}%`;
         
         if (index === 0) {
-            // 第一页显示缩略图网格
-            const grid = document.createElement('div');
-            grid.className = 'thumbnail-grid';
-            
-            // 总数显示
-            const totalCount = document.createElement('div');
-            totalCount.className = 'total-count';
-            totalCount.textContent = `共 ${photos.length - 1} 张照片`;
-            grid.appendChild(totalCount);
-            
-            // 添加缩略图
-            photos.slice(1).forEach((p, i) => {
-                const thumbnail = document.createElement('div');
-                thumbnail.className = 'grid-thumbnail';
-                
-                // 编号
-                const number = document.createElement('div');
-                number.className = 'thumbnail-number';
-                number.textContent = i + 1;
-                thumbnail.appendChild(number);
-                
-                // 图片
-                const img = createImageElement(p);
-                thumbnail.appendChild(img);
-                
-                // 点击事件
-                thumbnail.onclick = () => {
-                    updateSlide(i + 1);
-                };
-                
-                grid.appendChild(thumbnail);
-            });
-            
-            slide.appendChild(grid);
+            slide.appendChild(createThumbnailGrid(photos));
         } else {
-            // 照片视图
             const container = document.createElement('div');
             container.className = 'photo-container';
             
@@ -430,6 +403,41 @@ function initMusicPlayer() {
             });
         }
     });
+}
+
+// 修改缩略图创建部分
+function createThumbnailGrid(photos) {
+    const grid = document.createElement('div');
+    grid.className = 'thumbnail-grid';
+    
+    // 总数显示
+    const totalCount = document.createElement('div');
+    totalCount.className = 'total-count';
+    totalCount.textContent = `共 ${photos.length - 1} 张照片`;
+    grid.appendChild(totalCount);
+    
+    // 添加缩略图
+    photos.slice(1).forEach((photo, index) => {
+        const thumbnail = document.createElement('div');
+        thumbnail.className = 'grid-thumbnail';
+        
+        // 编号
+        const number = document.createElement('div');
+        number.className = 'thumbnail-number';
+        number.textContent = index + 1;
+        thumbnail.appendChild(number);
+        
+        // 图片（使用懒加载）
+        const img = createImageElement(photo);
+        thumbnail.appendChild(img);
+        
+        // 点击事件
+        thumbnail.onclick = () => updateSlide(index + 1);
+        
+        grid.appendChild(thumbnail);
+    });
+    
+    return grid;
 }
 
 // 启动应用

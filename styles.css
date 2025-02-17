@@ -1996,12 +1996,31 @@ header::before {
 
 /* 添加图片加载状态样式 */
 .loading {
-    opacity: 0.5;
+    opacity: 0;
     transition: opacity 0.3s ease;
+    filter: blur(5px);
+    transform: scale(0.95);
 }
 
 .loaded {
     opacity: 1;
+    filter: blur(0);
+    transform: scale(1);
+}
+
+/* 添加占位符样式 */
+.grid-thumbnail .loading {
+    background: linear-gradient(
+        45deg,
+        rgba(255, 182, 193, 0.2),
+        rgba(255, 228, 225, 0.2)
+    );
+}
+
+/* 优化图片加载动画 */
+.grid-thumbnail img,
+.photo-container img {
+    transition: all 0.3s ease;
 }
 
 /* 照片控制样式 */

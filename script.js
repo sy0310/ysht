@@ -394,15 +394,19 @@ function createInteractiveBackground() {
     
     // 修改createInteractiveBackground函数中的点击事件
     document.addEventListener('click', (e) => {
-        // 排除音乐按钮和其子元素
-        const musicBtn = document.getElementById('musicToggle');
-        if (e.target === musicBtn || musicBtn.contains(e.target)) {
+        // 排除所有按钮和输入元素
+        const interactiveElements = ['BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'];
+        if (interactiveElements.includes(e.target.tagName)) {
             return;
         }
         
-        // 排除输入框和按钮
-        if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') {
-            return;
+        // 排除所有包含data-no-heart属性的元素
+        let currentElement = e.target;
+        while (currentElement !== document.body) {
+            if (currentElement.dataset?.noHeart) {
+                return;
+            }
+            currentElement = currentElement.parentNode;
         }
 
         // 创建爱心

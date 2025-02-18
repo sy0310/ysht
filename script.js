@@ -529,9 +529,13 @@ function initMusicPlayer() {
 // 添加缓存优化
 function initCache() {
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/ysht.io/sw.js')  // 修改为正确的仓库名
+        navigator.serviceWorker.register('sw.js')  // 使用相对路径
             .then(reg => {
                 console.log('Service Worker 注册成功:', reg.scope);
+                // 强制激活
+                reg.addEventListener('activate', () => {
+                    reg.active.postMessage({type: 'SKIP_WAITING'});
+                });
             })
             .catch(error => {
                 console.error('Service Worker 注册失败:', error);

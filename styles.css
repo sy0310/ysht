@@ -998,20 +998,17 @@ button:disabled {
 }
 
 .back-to-grid-btn {
-    background: rgba(255, 107, 136, 0.8);
-    color: white;
+    background: rgba(255, 255, 255, 0.9);
     border: none;
-    padding: 10px 20px;
-    border-radius: 20px;
+    padding: 8px 15px;
+    border-radius: 15px;
     cursor: pointer;
-    font-size: 14px;
-    box-shadow: 0 4px 15px rgba(255, 107, 136, 0.2);
     transition: all 0.3s ease;
 }
 
 .back-to-grid-btn:hover {
-    background: rgba(255, 107, 136, 1);
-    transform: translateY(-2px);
+    background: rgba(255, 107, 136, 0.9);
+    color: white;
 }
 
 /* 动画效果 */
@@ -2084,8 +2081,16 @@ header::before {
     gap: 15px;
     box-shadow: 0 4px 15px rgba(255, 107, 136, 0.2);
     z-index: 10;
+    opacity: 0;  /* 默认隐藏 */
+    transition: opacity 0.3s ease;  /* 添加过渡效果 */
 }
 
+/* 当鼠标悬停在照片容器上时显示控件 */
+.photo-container:hover .photo-controls {
+    opacity: 1;
+}
+
+/* 优化控件样式 */
 .photo-number {
     color: #ff6b88;
     font-size: 14px;

@@ -13,9 +13,16 @@ const ASSETS = [
     'ysht.io/music/5.mp3'
 ];
 
+// 安装时清理旧缓存
 self.addEventListener('install', event => {
     event.waitUntil(
-        caches.open(CACHE_NAME)
+        caches.keys()
+            .then(cacheNames => {
+                return Promise.all(
+                    cacheNames.map(name => caches.delete(name))
+                );
+            })
+            .then(() => caches.open(CACHE_NAME))
             .then(cache => cache.addAll(ASSETS))
     );
 });

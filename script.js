@@ -5,10 +5,6 @@ const photosByChapter = {
     future: []    // 未来
 };
 
-// 在文件开头添加音乐相关变量
-let bgMusic = null;
-let musicPlaying = false;
-
 // 全局认证相关变量
 let failedAttempts = 0;
 const MAX_ATTEMPTS = 3;
@@ -468,63 +464,71 @@ async function initializePage() {
 
 // 修改音乐播放器初始化函数
 function initMusicPlayer() {
+    console.log('初始化音乐播放器...');  // 添加调试日志
+    
     const bgMusic = document.getElementById('bgMusic');
     const musicToggle = document.getElementById('musicToggle');
     const musicSelect = document.getElementById('musicSelect');
+    
+    if (!bgMusic || !musicToggle || !musicSelect) {
+        console.error('找不到音乐播放器元素');
+        return;
+    }
+    
     let musicPlaying = false;
-
+    
     // 初始化音乐播放器状态
     bgMusic.volume = 0.5;
     musicToggle.classList.remove('playing');
-
+    
     // 音乐切换按钮点击事件
-    musicToggle.addEventListener('click', function(event) {
-        event.stopPropagation();
-        event.preventDefault();
+    musicToggle.onclick = function() {
+        console.log('点击音乐按钮');  // 添加调试日志
         
-        try {
-            if (!musicPlaying) {
-                const playPromise = bgMusic.play();
-                if (playPromise !== undefined) {
-                    playPromise.then(() => {
-                        musicToggle.classList.add('playing');
-                        musicPlaying = true;
-                    }).catch(error => {
-                        console.error('播放失败:', error);
-                    });
-                }
-            } else {
-                bgMusic.pause();
-                musicToggle.classList.remove('playing');
-                musicPlaying = false;
-            }
-        } catch (error) {
-            console.error('音乐播放器错误:', error);
+        if (!musicPlaying) {
+            console.log('尝试播放音乐');
+            bgMusic.play()
+                .then(() => {
+                    console.log('音乐开始播放');
+                    musicToggle.classList.add('playing');
+                    musicPlaying = true;
+                })
+                .catch(error => {
+                    console.error('播放失败:', error);
+                });
+        } else {
+            console.log('暂停音乐');
+            bgMusic.pause();
+            musicToggle.classList.remove('playing');
+            musicPlaying = false;
         }
-    });
-
+    };
+    
     // 音乐选择事件
-    musicSelect.addEventListener('change', function(event) {
-        event.stopPropagation();
+    musicSelect.onchange = function() {
+        console.log('切换音乐:', this.value);  // 添加调试日志
         const wasPlaying = !bgMusic.paused;
         bgMusic.src = `music/${this.value}`;
         
         if (wasPlaying) {
-            const playPromise = bgMusic.play();
-            if (playPromise !== undefined) {
-                playPromise.then(() => {
+            bgMusic.play()
+                .then(() => {
+                    console.log('新音乐开始播放');
                     musicToggle.classList.add('playing');
                     musicPlaying = true;
-                }).catch(error => {
+                })
+                .catch(error => {
                     console.error('切换音乐失败:', error);
                 });
-            }
         }
-    });
+    };
+    
+    console.log('音乐播放器初始化完成');  // 添加调试日志
 }
 
-// 确保在页面加载完成后初始化音乐播放器
+// 确保在DOM加载完成后初始化音乐播放器
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM加载完成，初始化音乐播放器');  // 添加调试日志
     initMusicPlayer();
 });
 
@@ -551,4 +555,8 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // 启动应用
-document.addEventListener('DOMContentLoaded', initializePage); 
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('初始化页面');
+    initMusicPlayer();  // 确保音乐播放器先初始化
+    initializePage();
+}); 

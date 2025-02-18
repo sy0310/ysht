@@ -526,9 +526,23 @@ function initMusicPlayer() {
     console.log('音乐播放器初始化完成');  // 添加调试日志
 }
 
-// 启动应用
+// 添加缓存优化
+function initCache() {
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/仓库名/sw.js')  // 替换成你的GitHub仓库名
+            .then(reg => {
+                console.log('Service Worker 注册成功:', reg.scope);
+            })
+            .catch(error => {
+                console.error('Service Worker 注册失败:', error);
+            });
+    }
+}
+
+// 在页面初始化时注册
 document.addEventListener('DOMContentLoaded', function() {
     console.log('初始化页面');
-    initMusicPlayer();  // 确保音乐播放器先初始化
+    initMusicPlayer();
     initializePage();
+    initCache();  // 添加这行
 }); 

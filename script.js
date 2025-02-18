@@ -378,30 +378,65 @@ function initAuth() {
     }
 }
 
-// 修改初始化页面函数
+// 在initializePage函数中添加互动背景
+function createInteractiveBackground() {
+    const bg = document.createElement('div');
+    bg.className = 'interactive-bg';
+    
+    // 创建粒子
+    for (let i = 0; i < 50; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = `${Math.random() * 100}%`;
+        particle.style.animationDelay = `${Math.random() * 5}s`;
+        bg.appendChild(particle);
+    }
+    
+    // 创建可点击爱心
+    document.addEventListener('click', (e) => {
+        const heart = document.createElement('div');
+        heart.className = 'click-heart';
+        heart.style.left = `${e.clientX - 10}px`;
+        heart.style.top = `${e.clientY - 10}px`;
+        bg.appendChild(heart);
+        
+        setTimeout(() => heart.remove(), 2000);
+    });
+    
+    document.body.appendChild(bg);
+}
+
+// 修改initializePage函数
 async function initializePage() {
     if (!isAuthenticated && !initAuth()) {
         return;
     }
 
     try {
-        // 检查WebP支持
+        // 添加互动背景
+        createInteractiveBackground();
+        
+        // 显示加载进度条
+        const loadingBar = document.createElement('div');
+        loadingBar.className = 'loading-bar';
+        document.body.appendChild(loadingBar);
+        
+        // 更新进度条
+        const updateProgress = (progress) => {
+            loadingBar.style.width = `${progress}%`;
+        };
+        
+        // 初始化步骤
+        updateProgress(10);
         const supportsWebP = await checkWebPSupport();
-        if (!supportsWebP) {
-            console.warn('⚠️ 浏览器不支持WebP格式，可能影响图片显示');
-        }
-
-        // 显示加载状态
-        document.querySelector('.slides-wrapper').innerHTML = '<div class="loading">加载中...</div>';
-        
-        // 初始化音乐播放器
-        initMusicPlayer();
-        
-        // 初始化照片数组
+        updateProgress(30);
         await initializePhotos();
-        
-        // 初始化显示
+        updateProgress(70);
         initSlideshow();
+        updateProgress(100);
+        
+        // 移除进度条
+        setTimeout(() => loadingBar.remove(), 500);
         
         // 添加章节切换事件
         document.querySelectorAll('.chapter').forEach(chapterDiv => {
@@ -493,6 +528,24 @@ function initMusicPlayer() {
         }
     });
 }
+
+// 添加缓存优化
+function initCache() {
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js')
+            .then(registration => {
+                console.log('ServiceWorker 注册成功:', registration);
+            })
+            .catch(error => {
+                console.log('ServiceWorker 注册失败:', error);
+            });
+    }
+}
+
+// 在DOM加载完成后初始化缓存
+document.addEventListener('DOMContentLoaded', () => {
+    initCache();
+});
 
 // 启动应用
 document.addEventListener('DOMContentLoaded', initializePage); 

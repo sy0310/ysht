@@ -2085,4 +2085,92 @@ header::before {
 
 .jump-button:hover {
     transform: translateY(-2px);
+}
+
+/* 添加互动背景元素 */
+.interactive-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+    overflow: hidden;
+}
+
+/* 互动粒子效果 */
+.particle {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: rgba(255, 107, 136, 0.3);
+    border-radius: 50%;
+    animation: particleFloat 8s infinite linear;
+    transition: all 0.3s ease;
+}
+
+@keyframes particleFloat {
+    0% {
+        transform: translateY(0) scale(1);
+        opacity: 0;
+    }
+    50% {
+        transform: translateY(-100px) scale(1.2);
+        opacity: 0.5;
+    }
+    100% {
+        transform: translateY(-200px) scale(0.5);
+        opacity: 0;
+    }
+}
+
+/* 添加可点击的爱心 */
+.click-heart {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: rgba(255, 107, 136, 0.3);
+    transform: rotate(45deg);
+    animation: heartPulse 1.5s ease-in-out infinite;
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+.click-heart::before,
+.click-heart::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: inherit;
+}
+
+.click-heart::before {
+    left: -10px;
+}
+
+.click-heart::after {
+    top: -10px;
+}
+
+@keyframes heartPulse {
+    0%, 100% {
+        transform: rotate(45deg) scale(1);
+    }
+    50% {
+        transform: rotate(45deg) scale(1.2);
+    }
+}
+
+/* 添加加载进度条 */
+.loading-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #ff6b88, #ff8da1);
+    z-index: 1000;
+    transition: width 0.3s ease;
 } 

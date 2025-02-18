@@ -526,34 +526,6 @@ function initMusicPlayer() {
     console.log('音乐播放器初始化完成');  // 添加调试日志
 }
 
-// 确保在DOM加载完成后初始化音乐播放器
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM加载完成，初始化音乐播放器');  // 添加调试日志
-    initMusicPlayer();
-});
-
-// 添加缓存优化
-function initCache() {
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js')
-            .then(reg => {
-                reg.addEventListener('updatefound', () => {
-                    const newWorker = reg.installing;
-                    newWorker.addEventListener('statechange', () => {
-                        if (newWorker.state === 'activated') {
-                            window.location.reload();
-                        }
-                    });
-                });
-            });
-    }
-}
-
-// 在DOM加载完成后初始化缓存
-document.addEventListener('DOMContentLoaded', () => {
-    initCache();
-});
-
 // 启动应用
 document.addEventListener('DOMContentLoaded', function() {
     console.log('初始化页面');

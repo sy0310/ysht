@@ -392,8 +392,20 @@ function createInteractiveBackground() {
         bg.appendChild(particle);
     }
     
-    // 创建可点击爱心
+    // 修改createInteractiveBackground函数中的点击事件
     document.addEventListener('click', (e) => {
+        // 排除音乐按钮和其子元素
+        const musicBtn = document.getElementById('musicToggle');
+        if (e.target === musicBtn || musicBtn.contains(e.target)) {
+            return;
+        }
+        
+        // 排除输入框和按钮
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') {
+            return;
+        }
+
+        // 创建爱心
         const heart = document.createElement('div');
         heart.className = 'click-heart';
         heart.style.left = `${e.clientX - 10}px`;
@@ -533,11 +545,15 @@ function initMusicPlayer() {
 function initCache() {
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/sw.js')
-            .then(registration => {
-                console.log('ServiceWorker 注册成功:', registration);
-            })
-            .catch(error => {
-                console.log('ServiceWorker 注册失败:', error);
+            .then(reg => {
+                reg.addEventListener('updatefound', () => {
+                    const newWorker = reg.installing;
+                    newWorker.addEventListener('statechange', () => {
+                        if (newWorker.state === 'activated') {
+                            window.location.reload();
+                        }
+                    });
+                });
             });
     }
 }

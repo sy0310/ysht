@@ -38,27 +38,34 @@ header::before {
 }
 
 .music-player {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 100;
+    position: relative;
+    z-index: 1000;
 }
 
 .music-btn {
-    background: rgba(255, 255, 255, 0.9);
-    border: none;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    cursor: pointer;
-    box-shadow: 0 4px 15px rgba(255, 107, 136, 0.2);
     position: relative;
-    overflow: hidden;
+    z-index: 100;
+    background: rgba(255, 107, 136, 0.8);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.music-btn:hover {
+    background: rgba(255, 107, 136, 1);
+    transform: scale(1.1);
 }
 
 .music-icon {
-    font-size: 24px;
-    display: inline-block;
+    font-size: 20px;
+    color: white;
+    animation: none;
 }
 
 .music-btn.playing .music-icon {
@@ -730,16 +737,7 @@ button:disabled {
 }
 
 .music-list {
-    position: absolute;
-    right: 60px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 20px;
-    padding: 5px;
-    box-shadow: 0 4px 15px rgba(255, 107, 136, 0.2);
-    display: flex;
-    align-items: center;
+    z-index: 1000;
 }
 
 #musicSelect {

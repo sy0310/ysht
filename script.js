@@ -466,7 +466,7 @@ async function initializePage() {
     }
 }
 
-// 添加音乐播放器初始化函数
+// 修改音乐播放器初始化函数
 function initMusicPlayer() {
     bgMusic = document.getElementById('bgMusic');
     const musicToggle = document.getElementById('musicToggle');
@@ -474,10 +474,12 @@ function initMusicPlayer() {
     
     // 初始化音乐播放器状态
     bgMusic.volume = 0.5;
+    musicPlaying = false;
     musicToggle.classList.remove('playing');
     
     // 音乐切换按钮点击事件
-    musicToggle.addEventListener('click', () => {
+    musicToggle.onclick = function(e) {
+        e.stopPropagation(); // 阻止事件冒泡
         if (musicPlaying) {
             bgMusic.pause();
             musicToggle.classList.remove('playing');
@@ -486,41 +488,17 @@ function initMusicPlayer() {
             musicToggle.classList.add('playing');
         }
         musicPlaying = !musicPlaying;
-    });
+    };
     
     // 音乐选择事件
-    musicSelect.addEventListener('change', () => {
+    musicSelect.onchange = function(e) {
+        e.stopPropagation(); // 阻止事件冒泡
         const wasPlaying = !bgMusic.paused;
         bgMusic.src = `music/${musicSelect.value}`;
         if (wasPlaying) {
             bgMusic.play();
         }
-    });
-    
-    // 音乐结束事件
-    bgMusic.addEventListener('ended', () => {
-        if (musicPlaying) {
-            bgMusic.play();
-        }
-    });
-    
-    // 音乐加载错误处理
-    bgMusic.addEventListener('error', (e) => {
-        console.error('Music loading error:', e);
-        musicToggle.classList.remove('playing');
-        musicPlaying = false;
-    });
-    
-    // 自动播放处理
-    bgMusic.addEventListener('canplaythrough', () => {
-        if (musicPlaying) {
-            bgMusic.play().catch(error => {
-                console.error('Autoplay prevented:', error);
-                musicPlaying = false;
-                musicToggle.classList.remove('playing');
-            });
-        }
-    });
+    };
 }
 
 // 添加缓存优化

@@ -478,10 +478,7 @@ function initMusicPlayer() {
     musicToggle.classList.remove('playing');
 
     // 音乐切换按钮点击事件
-    musicToggle.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        
+    musicToggle.onclick = function() {
         if (musicPlaying) {
             bgMusic.pause();
             musicToggle.classList.remove('playing');
@@ -492,13 +489,10 @@ function initMusicPlayer() {
             musicToggle.classList.add('playing');
         }
         musicPlaying = !musicPlaying;
-    });
+    };
 
     // 音乐选择事件
-    musicSelect.addEventListener('change', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        
+    musicSelect.onchange = function() {
         const wasPlaying = !bgMusic.paused;
         bgMusic.src = `music/${this.value}`;
         
@@ -507,14 +501,7 @@ function initMusicPlayer() {
                 console.error('切换音乐失败:', error);
             });
         }
-    });
-
-    // 音乐加载错误处理
-    bgMusic.addEventListener('error', function(e) {
-        console.error('音乐加载错误:', e);
-        musicToggle.classList.remove('playing');
-        musicPlaying = false;
-    });
+    };
 }
 
 // 添加缓存优化

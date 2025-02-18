@@ -45,6 +45,7 @@ header::before {
     align-items: center;
     gap: 10px;
     z-index: 9999;
+    pointer-events: auto;
 }
 
 .music-list {
@@ -52,6 +53,7 @@ header::before {
     padding: 5px 10px;
     border-radius: 20px;
     box-shadow: 0 2px 10px rgba(255, 107, 136, 0.2);
+    pointer-events: auto;
 }
 
 #musicSelect {
@@ -62,6 +64,7 @@ header::before {
     cursor: pointer;
     font-family: inherit;
     outline: none;
+    pointer-events: auto;
 }
 
 .music-btn {
@@ -77,6 +80,7 @@ header::before {
     justify-content: center;
     transition: all 0.3s ease;
     box-shadow: 0 2px 10px rgba(255, 107, 136, 0.2);
+    pointer-events: auto;
 }
 
 .music-btn:hover {

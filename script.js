@@ -529,7 +529,7 @@ function initMusicPlayer() {
 // 添加缓存优化
 function initCache() {
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/仓库名/sw.js')  // 替换成你的GitHub仓库名
+        navigator.serviceWorker.register('/ysht.io/sw.js')  // 修改为正确的仓库名
             .then(reg => {
                 console.log('Service Worker 注册成功:', reg.scope);
             })

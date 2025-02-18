@@ -468,37 +468,53 @@ async function initializePage() {
 
 // 修改音乐播放器初始化函数
 function initMusicPlayer() {
-    bgMusic = document.getElementById('bgMusic');
+    const bgMusic = document.getElementById('bgMusic');
     const musicToggle = document.getElementById('musicToggle');
     const musicSelect = document.getElementById('musicSelect');
-    
+    let musicPlaying = false;
+
     // 初始化音乐播放器状态
     bgMusic.volume = 0.5;
-    musicPlaying = false;
     musicToggle.classList.remove('playing');
-    
+
     // 音乐切换按钮点击事件
-    musicToggle.onclick = function(e) {
-        e.stopPropagation(); // 阻止事件冒泡
+    musicToggle.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
         if (musicPlaying) {
             bgMusic.pause();
             musicToggle.classList.remove('playing');
         } else {
-            bgMusic.play();
+            bgMusic.play().catch(error => {
+                console.error('播放失败:', error);
+            });
             musicToggle.classList.add('playing');
         }
         musicPlaying = !musicPlaying;
-    };
-    
+    });
+
     // 音乐选择事件
-    musicSelect.onchange = function(e) {
-        e.stopPropagation(); // 阻止事件冒泡
+    musicSelect.addEventListener('change', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
         const wasPlaying = !bgMusic.paused;
-        bgMusic.src = `music/${musicSelect.value}`;
+        bgMusic.src = `music/${this.value}`;
+        
         if (wasPlaying) {
-            bgMusic.play();
+            bgMusic.play().catch(error => {
+                console.error('切换音乐失败:', error);
+            });
         }
-    };
+    });
+
+    // 音乐加载错误处理
+    bgMusic.addEventListener('error', function(e) {
+        console.error('音乐加载错误:', e);
+        musicToggle.classList.remove('playing');
+        musicPlaying = false;
+    });
 }
 
 // 添加缓存优化

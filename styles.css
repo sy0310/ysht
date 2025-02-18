@@ -343,7 +343,7 @@ header::before {
     display: none;
 }
 
-/* 新的漂浮爱心动画 */
+/* 保留漂浮爱心动画 */
 .floating-heart {
     position: absolute;
     width: 20px;
@@ -353,6 +353,24 @@ header::before {
     animation: floatHeart 15s infinite linear;
     pointer-events: none;
     z-index: -1;
+}
+
+.floating-heart::before,
+.floating-heart::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: inherit;
+}
+
+.floating-heart::before {
+    left: -10px;
+}
+
+.floating-heart::after {
+    top: -10px;
 }
 
 @keyframes floatHeart {
@@ -368,11 +386,6 @@ header::before {
         transform: rotate(45deg) translateY(-100vh) scale(0.5);
         opacity: 0;
     }
-}
-
-/* 移除所有点击相关样式 */
-.click-heart {
-    display: none !important;
 }
 
 /* 标题样式 */

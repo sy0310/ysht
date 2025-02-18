@@ -396,10 +396,6 @@ function createInteractiveBackground() {
     
     // 自动生成爱心（每秒一个）
     setInterval(createFloatingHeart, 1000);
-    // 初始生成一批
-    for (let i = 0; i < 10; i++) {
-        setTimeout(createFloatingHeart, i * 300);
-    }
     
     document.body.appendChild(bg);
 }

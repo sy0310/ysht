@@ -478,31 +478,55 @@ function initMusicPlayer() {
     musicToggle.classList.remove('playing');
 
     // 音乐切换按钮点击事件
-    musicToggle.onclick = function() {
-        if (musicPlaying) {
-            bgMusic.pause();
-            musicToggle.classList.remove('playing');
-        } else {
-            bgMusic.play().catch(error => {
-                console.error('播放失败:', error);
-            });
-            musicToggle.classList.add('playing');
+    musicToggle.addEventListener('click', function(event) {
+        event.stopPropagation();
+        event.preventDefault();
+        
+        try {
+            if (!musicPlaying) {
+                const playPromise = bgMusic.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        musicToggle.classList.add('playing');
+                        musicPlaying = true;
+                    }).catch(error => {
+                        console.error('播放失败:', error);
+                    });
+                }
+            } else {
+                bgMusic.pause();
+                musicToggle.classList.remove('playing');
+                musicPlaying = false;
+            }
+        } catch (error) {
+            console.error('音乐播放器错误:', error);
         }
-        musicPlaying = !musicPlaying;
-    };
+    });
 
     // 音乐选择事件
-    musicSelect.onchange = function() {
+    musicSelect.addEventListener('change', function(event) {
+        event.stopPropagation();
         const wasPlaying = !bgMusic.paused;
         bgMusic.src = `music/${this.value}`;
         
         if (wasPlaying) {
-            bgMusic.play().catch(error => {
-                console.error('切换音乐失败:', error);
-            });
+            const playPromise = bgMusic.play();
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    musicToggle.classList.add('playing');
+                    musicPlaying = true;
+                }).catch(error => {
+                    console.error('切换音乐失败:', error);
+                });
+            }
         }
-    };
+    });
 }
+
+// 确保在页面加载完成后初始化音乐播放器
+document.addEventListener('DOMContentLoaded', function() {
+    initMusicPlayer();
+});
 
 // 添加缓存优化
 function initCache() {

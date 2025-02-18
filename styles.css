@@ -343,42 +343,53 @@ header::before {
     display: none;
 }
 
-/* 添加漂浮的爱心效果 */
-.floating-hearts {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 0;
-}
-
-.heart {
+/* 修改爱心动画 */
+.floating-heart {
     position: absolute;
     width: 20px;
     height: 20px;
-    background: rgba(255, 182, 193, 0.4);
+    background: rgba(255, 107, 136, 0.3);
     transform: rotate(45deg);
-    animation: floatingHeart 15s infinite linear;
+    animation: floatHeart 15s infinite linear;
+    pointer-events: none;
 }
 
-.heart::before,
-.heart::after {
+.floating-heart::before,
+.floating-heart::after {
     content: '';
     position: absolute;
     width: 20px;
     height: 20px;
     border-radius: 50%;
-    background: rgba(255, 182, 193, 0.4);
+    background: inherit;
 }
 
-.heart::before {
+.floating-heart::before {
     left: -10px;
 }
 
-.heart::after {
+.floating-heart::after {
     top: -10px;
+}
+
+@keyframes floatHeart {
+    0% {
+        transform: rotate(45deg) translateY(100vh) scale(0.5);
+        opacity: 0;
+    }
+    50% {
+        transform: rotate(45deg) translateY(50vh) scale(1);
+        opacity: 0.5;
+    }
+    100% {
+        transform: rotate(45deg) translateY(-100vh) scale(0.5);
+        opacity: 0;
+    }
+}
+
+/* 移除点击爱心相关样式 */
+.click-heart {
+    display: none !important;
 }
 
 /* 标题样式 */
@@ -414,7 +425,7 @@ button:hover {
         opacity: 0.5;
     }
     100% {
-        transform: rotate(45deg) translate(100vw, -100vh);
+        transform: translate(100vw, -100vh);
         opacity: 0;
     }
 }
@@ -2099,69 +2110,9 @@ header::before {
     overflow: hidden;
 }
 
-/* 互动粒子效果 */
-.particle {
-    position: absolute;
-    width: 8px;
-    height: 8px;
-    background: rgba(255, 107, 136, 0.3);
-    border-radius: 50%;
-    animation: particleFloat 8s infinite linear;
-    transition: all 0.3s ease;
-}
-
-@keyframes particleFloat {
-    0% {
-        transform: translateY(0) scale(1);
-        opacity: 0;
-    }
-    50% {
-        transform: translateY(-100px) scale(1.2);
-        opacity: 0.5;
-    }
-    100% {
-        transform: translateY(-200px) scale(0.5);
-        opacity: 0;
-    }
-}
-
 /* 添加可点击的爱心 */
 .click-heart {
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    background: rgba(255, 107, 136, 0.3);
-    transform: rotate(45deg);
-    animation: heartPulse 1.5s ease-in-out infinite;
-    cursor: pointer;
-    pointer-events: auto;
-}
-
-.click-heart::before,
-.click-heart::after {
-    content: '';
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: inherit;
-}
-
-.click-heart::before {
-    left: -10px;
-}
-
-.click-heart::after {
-    top: -10px;
-}
-
-@keyframes heartPulse {
-    0%, 100% {
-        transform: rotate(45deg) scale(1);
-    }
-    50% {
-        transform: rotate(45deg) scale(1.2);
-    }
+    display: none;
 }
 
 /* 添加加载进度条 */

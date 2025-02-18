@@ -378,46 +378,24 @@ function initAuth() {
     }
 }
 
-// 在initializePage函数中添加互动背景
+// 修改createInteractiveBackground函数
 function createInteractiveBackground() {
     const bg = document.createElement('div');
     bg.className = 'interactive-bg';
     
-    // 创建粒子
-    for (let i = 0; i < 50; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'particle';
-        particle.style.left = `${Math.random() * 100}%`;
-        particle.style.animationDelay = `${Math.random() * 5}s`;
-        bg.appendChild(particle);
-    }
-    
-    // 修改createInteractiveBackground函数中的点击事件
-    document.addEventListener('click', (e) => {
-        // 排除所有按钮和输入元素
-        const interactiveElements = ['BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'];
-        if (interactiveElements.includes(e.target.tagName)) {
-            return;
-        }
-        
-        // 排除所有包含data-no-heart属性的元素
-        let currentElement = e.target;
-        while (currentElement !== document.body) {
-            if (currentElement.dataset?.noHeart) {
-                return;
-            }
-            currentElement = currentElement.parentNode;
-        }
-
-        // 创建爱心
+    // 创建持续漂浮的爱心
+    function createFloatingHeart() {
         const heart = document.createElement('div');
-        heart.className = 'click-heart';
-        heart.style.left = `${e.clientX - 10}px`;
-        heart.style.top = `${e.clientY - 10}px`;
+        heart.className = 'floating-heart';
+        heart.style.left = `${Math.random() * 100}%`;
+        heart.style.animationDuration = `${Math.random() * 5 + 5}s`;
         bg.appendChild(heart);
         
-        setTimeout(() => heart.remove(), 2000);
-    });
+        setTimeout(() => heart.remove(), 5000);
+    }
+    
+    // 自动生成爱心
+    setInterval(createFloatingHeart, 1000);
     
     document.body.appendChild(bg);
 }
